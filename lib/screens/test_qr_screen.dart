@@ -6,7 +6,6 @@ import '../widgets/resultado_card.dart';
 
 class TestQrScreen extends StatefulWidget {
   const TestQrScreen({super.key});
-
   @override
   State<TestQrScreen> createState() => _TestQrScreenState();
 }
@@ -15,14 +14,11 @@ class _TestQrScreenState extends State<TestQrScreen> {
   final TextEditingController codigoController = TextEditingController();
 
   final ApiService apiService = ApiService();
-
   String mensaje = '';
   bool cargando = false;
   Carnet? carnetEncontrado;
-
   Future<void> consultarCarnet() async {
     final codigo = codigoController.text.trim();
-
     if (codigo.isEmpty) {
       setState(() {
         mensaje = 'Ingresa un código QR';
@@ -30,21 +26,16 @@ class _TestQrScreenState extends State<TestQrScreen> {
       });
       return;
     }
-
     setState(() {
       cargando = true;
       mensaje = '';
       carnetEncontrado = null;
     });
-
     try {
       final Carnet? carnet = await apiService.obtenerCarnet(codigo);
-
       if (!mounted) return;
-
       setState(() {
         cargando = false;
-
         if (carnet != null) {
           carnetEncontrado = carnet;
           mensaje = '';
@@ -55,7 +46,6 @@ class _TestQrScreenState extends State<TestQrScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-
       setState(() {
         cargando = false;
         carnetEncontrado = null;
