@@ -5,7 +5,6 @@ import 'test_qr_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,24 +18,19 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.badge, size: 90),
-
             const SizedBox(height: 24),
-
             const Text(
               'Verificación de Carnet Estudiantil',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 12),
-
             const Text(
-              'Consulta y verifica la información '
+              'Consulta y verifica la autenticidad de la información '
               'de un carnet estudiantil mediante su código QR.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16),
             ),
-
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
