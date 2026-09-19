@@ -5,9 +5,7 @@ import '../widgets/resultado_card.dart';
 
 class ResultScreen extends StatelessWidget {
   final Carnet carnet;
-
   const ResultScreen({super.key, required this.carnet});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,9 +15,7 @@ class ResultScreen extends StatelessWidget {
         child: Column(
           children: [
             ResultadoCard(carnet: carnet),
-
             const SizedBox(height: 20),
-
             SizedBox(
               width: double.infinity,
               height: 50,
