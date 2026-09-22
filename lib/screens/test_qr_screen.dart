@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/carnet.dart';
 import '../services/api_service.dart';
 import '../widgets/resultado_card.dart';
+import 'digital_carnet_screen.dart';
 
 class TestQrScreen extends StatefulWidget {
   const TestQrScreen({super.key});
@@ -99,9 +100,32 @@ class _TestQrScreenState extends State<TestQrScreen> {
               ),
             ),
             const SizedBox(height: 30),
-            if (carnetEncontrado != null)
-              ResultadoCard(carnet: carnetEncontrado!)
-            else
+            if (carnetEncontrado != null) ...[
+              ResultadoCard(carnet: carnetEncontrado!),
+
+              const SizedBox(height: 20),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            DigitalCarnetScreen(carnet: carnetEncontrado!),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.badge),
+                  label: const Text(
+                    'Ver carnet digital',
+                    style: TextStyle(fontSize: 17),
+                  ),
+                ),
+              ),
+            ] else
               Text(
                 mensaje,
                 textAlign: TextAlign.center,
