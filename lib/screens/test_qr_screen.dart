@@ -65,8 +65,8 @@ class _TestQrScreenState extends State<TestQrScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Probar carnet'), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             const SizedBox(height: 30),
