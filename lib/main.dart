@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'screens/home_screen.dart';
+import 'screens/microsoft_login_test_screen.dart';
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -34,7 +35,7 @@ class CarnetEstudiantilApp extends StatelessWidget {
 
       title: 'Carnet Estudiantil',
 
-      home: const HomeScreen(),
+      home: const MicrosoftLoginTestScreen(),
     );
   }
 }

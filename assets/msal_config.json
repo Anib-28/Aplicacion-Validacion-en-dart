@@ -1,0 +1,15 @@
+{
+  "account_mode": "SINGLE",
+  "broker_redirect_uri_registered": false,
+  "authorization_user_agent": "BROWSER",
+  "authorities": [
+    {
+      "type": "AAD",
+      "audience": {
+        "type": "AzureADMyOrg",
+        "tenant_id": "e666de0c-425e-4eac-abda-c579753e95f0"
+      },
+      "default": true
+    }
+  ]
+}
