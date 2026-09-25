@@ -1,9 +1,20 @@
 import 'package:msal_auth/msal_auth.dart';
 
 class MicrosoftAuthService {
+  static final MicrosoftAuthService _instancia =
+      MicrosoftAuthService._interno();
+
+  factory MicrosoftAuthService() {
+    return _instancia;
+  }
+
+  MicrosoftAuthService._interno();
+
   late final SingleAccountPca _msal;
 
   bool _inicializado = false;
+
+  String? _accessToken;
 
   Future<void> inicializar() async {
     if (_inicializado) return;
@@ -23,14 +34,35 @@ class MicrosoftAuthService {
     await inicializar();
 
     final resultado = await _msal.acquireToken(
-      scopes: const ['openid', 'profile', 'email'],
+      scopes: const [
+        'api://3d8faab6-f893-411a-bc5e-c17bead178c0/access_as_user',
+      ],
     );
+
+    _accessToken = resultado.accessToken;
 
     return resultado.account;
   }
 
+  Future<String> obtenerAccessToken() async {
+    await inicializar();
+
+    final resultado = await _msal.acquireTokenSilent(
+      scopes: const [
+        'api://3d8faab6-f893-411a-bc5e-c17bead178c0/access_as_user',
+      ],
+      authority: 'https://login.microsoftonline.com/e666de0c-425e-4eac-abda-c579753e95f0',
+    );
+
+    _accessToken = resultado.accessToken;
+
+    return _accessToken!;
+  }
+
   Future<void> cerrarSesion() async {
     await inicializar();
+
+    _accessToken = null;
 
     await _msal.signOut();
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/microsoft_auth_service.dart';
+import 'home_screen.dart';
 
 class MicrosoftLoginTestScreen extends StatefulWidget {
   const MicrosoftLoginTestScreen({super.key});
@@ -23,25 +24,18 @@ class _MicrosoftLoginTestScreenState extends State<MicrosoftLoginTestScreen> {
     });
 
     try {
-      final cuenta = await _authService.iniciarSesion();
+      await _authService.iniciarSesion();
 
       if (!mounted) return;
 
-      setState(() {
-        _mensaje =
-            'Sesión iniciada correctamente.\n\n'
-            'Usuario: ${cuenta.username}';
-      });
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     } catch (e) {
       if (!mounted) return;
 
       setState(() {
         _mensaje = 'Error al iniciar sesión:\n\n$e';
-      });
-    } finally {
-      if (!mounted) return;
-
-      setState(() {
         _cargando = false;
       });
     }
