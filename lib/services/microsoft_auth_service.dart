@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:msal_auth/msal_auth.dart';
 
 class MicrosoftAuthService {
@@ -71,5 +73,37 @@ class MicrosoftAuthService {
     await inicializar();
 
     return await _msal.currentAccount;
+  }
+
+  Future<void> mostrarInformacionToken() async {
+    final token = await obtenerAccessToken();
+
+    final partes = token.split('.');
+
+    if (partes.length != 3) {
+      print('TOKEN JWT NO VÁLIDO');
+      return;
+    }
+
+    final payload = partes[1];
+
+    String normalizado = payload;
+    while (normalizado.length % 4 != 0) {
+      normalizado += '=';
+    }
+
+    final decoded = utf8.decode(base64Url.decode(normalizado));
+
+    final datos = jsonDecode(decoded) as Map<String, dynamic>;
+
+    print('========== TOKEN MICROSOFT ==========');
+    print('aud: ${datos['aud']}');
+    print('iss: ${datos['iss']}');
+    print('appid: ${datos['appid']}');
+    print('scp: ${datos['scp']}');
+    print('roles: ${datos['roles']}');
+    print('name: ${datos['name']}');
+    print('preferred_username: ${datos['preferred_username']}');
+    print('=====================================');
   }
 }

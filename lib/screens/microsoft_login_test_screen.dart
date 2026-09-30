@@ -26,6 +26,8 @@ class _MicrosoftLoginTestScreenState extends State<MicrosoftLoginTestScreen> {
     try {
       await _authService.iniciarSesion();
 
+      await _authService.mostrarInformacionToken();
+
       if (!mounted) return;
 
       Navigator.of(context).pushReplacement(

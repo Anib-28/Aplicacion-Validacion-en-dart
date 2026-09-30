@@ -4,13 +4,17 @@ import 'package:http/http.dart' as http;
 
 import '../models/carnet.dart';
 import '../utils/app_constants.dart';
-import 'microsoft_auth_service.dart';
+import 'local_auth_service.dart';
 
 class ApiService {
-  final MicrosoftAuthService _authService = MicrosoftAuthService();
+  final LocalAuthService _authService = LocalAuthService();
 
   Future<Carnet?> obtenerCarnet(String codigoQR) async {
-    final accessToken = await _authService.obtenerAccessToken();
+    final accessToken = await _authService.obtenerToken();
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('No hay una sesión iniciada.');
+    }
 
     final url = Uri.parse('${AppConstants.baseUrl}/api/Carnets/$codigoQR');
 
@@ -32,9 +36,7 @@ class ApiService {
     }
 
     if (response.statusCode == 401) {
-      throw Exception(
-        'No autorizado. El token de acceso no es válido para la API.',
-      );
+      throw Exception('No autorizado. La sesión no es válida o ha expirado.');
     }
 
     throw Exception('Error al consultar el carnet: ${response.statusCode}');
