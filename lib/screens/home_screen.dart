@@ -1,10 +1,81 @@
 import 'package:flutter/material.dart';
 
+import '../models/carnet.dart';
+import '../services/api_service.dart';
+import '../services/local_auth_service.dart';
 import 'scanner_screen.dart';
 import 'test_qr_screen.dart';
+import 'digital_carnet_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final LocalAuthService _authService = LocalAuthService();
+
+  String _correo = '';
+  String _rol = '';
+  bool _cargandoSesion = true;
+
+  final ApiService _apiService = ApiService();
+
+  Carnet? _miCarnet;
+  bool _cargandoCarnet = true;
+  String? _errorCarnet;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarSesion();
+  }
+
+  Future<void> _cargarSesion() async {
+    final correo = await _authService.obtenerCorreo();
+    final rol = await _authService.obtenerRol();
+
+    if (!mounted) return;
+
+    setState(() {
+      _correo = correo ?? '';
+      _rol = rol ?? '';
+      _cargandoSesion = false;
+    });
+
+    if (rol?.toUpperCase() == 'ESTUDIANTE') {
+      await _cargarMiCarnet();
+    } else {
+      if (!mounted) return;
+
+      setState(() {
+        _cargandoCarnet = false;
+      });
+    }
+  }
+
+  Future<void> _cargarMiCarnet() async {
+    try {
+      final carnet = await _apiService.obtenerMiCarnet();
+
+      if (!mounted) return;
+
+      setState(() {
+        _miCarnet = carnet;
+        _cargandoCarnet = false;
+        _errorCarnet = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _cargandoCarnet = false;
+        _errorCarnet = e.toString();
+      });
+    }
+  }
 
   // ============================================================
   // COLORES DE LA APLICACIÓN
@@ -50,9 +121,59 @@ class HomeScreen extends StatelessWidget {
               // ==================================================
 
               _encabezado(),
-
               const SizedBox(height: 35),
 
+              if (_cargandoSesion)
+                const CircularProgressIndicator()
+              else
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFE0E4E9)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Sesión actual',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text('Correo: $_correo'),
+                      Text('Rol: $_rol'),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 16),
+
+              if (_cargandoCarnet)
+                const Center(child: CircularProgressIndicator())
+              else if (_errorCarnet != null)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFE0E4E9)),
+                  ),
+                  child: Text(
+                    'No se pudo cargar tu carnet.',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                )
+              else if (_miCarnet != null)
+                _tarjetaMiCarnet(),
+              const SizedBox(height: 25),
               // ==================================================
               // DESCRIPCIÓN
               // ==================================================
@@ -117,6 +238,73 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget _tarjetaMiCarnet() {
+    final carnet = _miCarnet!;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFE0E4E9)),
+      ),
+      child: Column(
+        children: [
+          const Icon(Icons.badge_rounded, color: azul, size: 50),
+
+          const SizedBox(height: 10),
+
+          const Text(
+            'Mi carnet estudiantil',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: azul,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          const SizedBox(height: 6),
+
+          const Text(
+            'Tu carnet digital está disponible',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: grisTexto, fontSize: 14),
+          ),
+
+          const SizedBox(height: 18),
+
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DigitalCarnetScreen(carnet: carnet),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.badge_outlined),
+              label: const Text(
+                'VER MI CARNET DIGITAL',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: azul,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   // ============================================================
   // ENCABEZADO
   // ============================================================

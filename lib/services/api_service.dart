@@ -41,4 +41,37 @@ class ApiService {
 
     throw Exception('Error al consultar el carnet: ${response.statusCode}');
   }
+
+  Future<Carnet?> obtenerMiCarnet() async {
+    final accessToken = await _authService.obtenerToken();
+
+    if (accessToken == null || accessToken.isEmpty) {
+      throw Exception('No hay una sesión iniciada.');
+    }
+
+    final url = Uri.parse('${AppConstants.baseUrl}/api/Carnets/mi-carnet');
+
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return Carnet.fromJson(data);
+    }
+
+    if (response.statusCode == 404) {
+      return null;
+    }
+
+    if (response.statusCode == 401) {
+      throw Exception('No autorizado. La sesión no es válida o ha expirado.');
+    }
+
+    throw Exception('Error al consultar mi carnet: ${response.statusCode}');
+  }
 }
