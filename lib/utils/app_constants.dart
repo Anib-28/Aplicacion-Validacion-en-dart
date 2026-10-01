@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AppConstants {
-  static const String baseUrl = 'https://192.168.100.99:7276';
+  static const String baseUrl =
+      'https://developmental-doe-douglas-quite.trycloudflare.com';
 
   static const String appName = 'Carnet Estudiantil';
 

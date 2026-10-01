@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final LocalAuthService _authService = LocalAuthService();
-
+  bool get _esEstudiante => _rol.toUpperCase() == 'ESTUDIANTE';
   String _correo = '';
   String _rol = '';
   bool _cargandoSesion = true;
@@ -123,35 +123,6 @@ class _HomeScreenState extends State<HomeScreen> {
               _encabezado(),
               const SizedBox(height: 35),
 
-              if (_cargandoSesion)
-                const CircularProgressIndicator()
-              else
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFE0E4E9)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Sesión actual',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text('Correo: $_correo'),
-                      Text('Rol: $_rol'),
-                    ],
-                  ),
-                ),
-              const SizedBox(height: 16),
-
               if (_cargandoCarnet)
                 const Center(child: CircularProgressIndicator())
               else if (_errorCarnet != null)
@@ -164,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     border: Border.all(color: const Color(0xFFE0E4E9)),
                   ),
                   child: Text(
-                    'No se pudo cargar tu carnet.',
+                    'No se pudo cargar tu carnet. .\n\n$_errorCarnet',
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -173,64 +144,65 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               else if (_miCarnet != null)
                 _tarjetaMiCarnet(),
-              const SizedBox(height: 25),
-              // ==================================================
-              // DESCRIPCIÓN
-              // ==================================================
-              const Text(
-                'Verificación de autenticidad',
-                textAlign: TextAlign.center,
 
-                style: TextStyle(
-                  color: azul,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
+              if (!_esEstudiante) ...[
+                const SizedBox(height: 25),
+
+                // ==================================================
+                // DESCRIPCIÓN
+                // ==================================================
+                const Text(
+                  'Verificación de autenticidad',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: azul,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-              const Text(
-                'Verifica de manera rápida y segura la '
-                'autenticidad de un carnet estudiantil '
-                'mediante su código QR.',
-                textAlign: TextAlign.center,
+                const Text(
+                  'Verifica de manera rápida y segura la '
+                  'autenticidad de un carnet estudiantil '
+                  'mediante su código QR.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: grisTexto, fontSize: 16, height: 1.5),
+                ),
 
-                style: TextStyle(color: grisTexto, fontSize: 16, height: 1.5),
-              ),
+                const SizedBox(height: 35),
 
-              const SizedBox(height: 35),
+                // ==================================================
+                // BOTÓN ESCANEAR
+                // ==================================================
+                _botonEscanear(context),
 
-              // ==================================================
-              // BOTÓN ESCANEAR
-              // ==================================================
-              _botonEscanear(context),
+                const SizedBox(height: 15),
 
-              const SizedBox(height: 15),
+                // ==================================================
+                // BOTÓN PRUEBA MANUAL
+                // ==================================================
+                _botonManual(context),
 
-              // ==================================================
-              // BOTÓN PRUEBA MANUAL
-              // ==================================================
-              _botonManual(context),
+                const SizedBox(height: 35),
 
-              const SizedBox(height: 35),
+                // ==================================================
+                // TARJETA INFORMATIVA
+                // ==================================================
+                _tarjetaInformativa(),
 
-              // ==================================================
-              // TARJETA INFORMATIVA
-              // ==================================================
-              _tarjetaInformativa(),
+                const SizedBox(height: 25),
 
-              const SizedBox(height: 25),
-
-              // ==================================================
-              // PIE
-              // ==================================================
-              const Text(
-                'Sistema de verificación de carnets estudiantiles',
-                textAlign: TextAlign.center,
-
-                style: TextStyle(color: grisTexto, fontSize: 12),
-              ),
+                // ==================================================
+                // PIE
+                // ==================================================
+                const Text(
+                  'Sistema de verificación de carnets estudiantiles',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: grisTexto, fontSize: 12),
+                ),
+              ],
             ],
           ),
         ),
@@ -241,67 +213,75 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _tarjetaMiCarnet() {
     final carnet = _miCarnet!;
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE0E4E9)),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.badge_rounded, color: azul, size: 50),
-
-          const SizedBox(height: 10),
-
-          const Text(
-            'Mi carnet estudiantil',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: azul,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 6),
-
-          const Text(
-            'Tu carnet digital está disponible',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: grisTexto, fontSize: 14),
-          ),
-
-          const SizedBox(height: 18),
-
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DigitalCarnetScreen(carnet: carnet),
+    return Card(
+      elevation: 3,
+      margin: const EdgeInsets.only(bottom: 20),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.badge_outlined, color: Color(0xFF062B63), size: 28),
+                SizedBox(width: 10),
+                Text(
+                  'Mi carnet estudiantil',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF062B63),
                   ),
-                );
-              },
-              icon: const Icon(Icons.badge_outlined),
-              label: const Text(
-                'VER MI CARNET DIGITAL',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: azul,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            Text(
+              '${carnet.estudiante?.nombres ?? ''} '
+              '${carnet.estudiante?.apellidos ?? ''}',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            ),
+
+            const SizedBox(height: 6),
+
+            Text(
+              'Código: ${carnet.codigoCarnet}',
+              style: const TextStyle(color: Colors.grey),
+            ),
+
+            const SizedBox(height: 16),
+
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DigitalCarnetScreen(carnet: carnet),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.badge),
+                label: const Text(
+                  'Ver mi carnet digital',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF062B63),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

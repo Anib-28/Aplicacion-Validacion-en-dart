@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/carnet.dart';
 import '../widgets/resultado_card.dart';
-import 'digital_carnet_screen.dart';
 
 class ResultScreen extends StatelessWidget {
   final Carnet carnet;
@@ -51,45 +50,6 @@ class ResultScreen extends StatelessWidget {
             ResultadoCard(carnet: carnet),
 
             const SizedBox(height: 20),
-
-            // ==================================================
-            // VER CARNET DIGITAL
-            // ==================================================
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DigitalCarnetScreen(carnet: carnet),
-                    ),
-                  );
-                },
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: azul,
-                  foregroundColor: Colors.white,
-                  elevation: 2,
-
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                ),
-
-                icon: const Icon(Icons.badge_rounded, size: 26),
-
-                label: const Text(
-                  'Ver carnet digital',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 14),
-
             // ==================================================
             // ESCANEAR OTRO
             // ==================================================
